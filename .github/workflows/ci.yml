@@ -1,5 +1,6 @@
 name: CI
 
+# Roda automaticamente a cada push ou Pull Request na branch main
 on:
   push:
     branches: [main]
@@ -26,4 +27,4 @@ jobs:
         run: flake8 . --max-line-length=100
 
       - name: Rodar os testes automatizados
-        run: pytest
+        run: python -m pytest
