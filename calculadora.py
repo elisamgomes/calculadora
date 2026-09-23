@@ -1,9 +1,3 @@
-"""
-Calculadora simples.
-Projeto de exemplo para demonstrar um pipeline básico de
-Integração Contínua (CI) com GitHub Actions.
-"""
-
 
 def somar(a, b):
     return a + b
