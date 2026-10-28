@@ -1,0 +1,57 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: pytest
+      - name: Gerar pacote
+        run: |
+          mkdir dist
+          cp calculadora.py requirements.txt README.md dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: calculadora-dist
+          path: dist
+
+  staging:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: calculadora-dist
+          path: dist
+      - name: Deploy em staging
+        run: |
+          echo "Publicando em STAGING"
+          ls -la dist
+
+  production:
+    needs: staging
+    runs-on: ubuntu-latest
+    environment: production   # exige aprovação do revisor configurado no Environment
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: calculadora-dist
+          path: dist
+      - name: Deploy em produção
+        run: |
+          echo "Publicando em PRODUÇÃO"
+          ls -la dist
