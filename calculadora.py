@@ -17,6 +17,12 @@ def dividir(a, b):
     return a / b
 
 
+def aplicar_desconto(preco, percentual):
+    if percentual < 0 or percentual > 100:
+        raise ValueError("Percentual deve estar entre 0 e 100")
+    return preco * (1 - percentual / 100)
+
+
 if __name__ == "__main__":
     print("Calculadora simples")
     print("2 + 3 =", somar(2, 3))
