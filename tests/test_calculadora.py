@@ -1,5 +1,12 @@
 import pytest
-from calculadora import somar, subtrair, multiplicar, dividir
+
+from calculadora import (
+    aplicar_desconto,
+    dividir,
+    multiplicar,
+    somar,
+    subtrair,
+)
 
 
 def test_somar():
@@ -21,3 +28,12 @@ def test_dividir():
 def test_dividir_por_zero():
     with pytest.raises(ValueError):
         dividir(10, 0)
+
+
+def test_desconto_valido():
+    assert aplicar_desconto(200, 10) == pytest.approx(180)
+
+
+def test_desconto_percentual_invalido():
+    with pytest.raises(ValueError):
+        aplicar_desconto(100, 150)
