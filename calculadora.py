@@ -18,6 +18,8 @@ def dividir(a, b):
 
 
 def aplicar_desconto(preco, percentual):
+    if preco < 0:
+        raise ValueError("Preço não pode ser negativo")
     if percentual < 0 or percentual > 100:
         raise ValueError("Percentual deve estar entre 0 e 100")
     return preco * (1 - percentual / 100)
