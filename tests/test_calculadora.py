@@ -37,3 +37,7 @@ def test_desconto_valido():
 def test_desconto_percentual_invalido():
     with pytest.raises(ValueError):
         aplicar_desconto(100, 150)
+
+def test_desconto_preco_negativo():
+    with pytest.raises(ValueError):
+        aplicar_desconto(-10, 10)
