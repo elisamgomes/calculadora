@@ -1,0 +1,55 @@
+# Rollback para uma baseline anterior (PGC 6.4)
+# Actions -> Rollback -> Run workflow ->  v1.0.1
+
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag da versão para a qual voltar (ex.: v1.0.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  rollback:
+    name: Rollback para ${{ inputs.tag }}
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: Validar formato da tag
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || {
+            echo "::error::Tag inválida: use o formato vX.Y.Z"; exit 1; }
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Deploy (simulado) em production
+        env:
+          TAG: ${{ inputs.tag }}
+        run: echo "Implantando $TAG em production (simulado)"
+
+      - name: Marcar a Release como Latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+        run: gh release edit "$TAG" --latest --repo "$GITHUB_REPOSITORY"
+
+      - name: Registrar no resumo da execução (auditoria)
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          {
+            echo "## Rollback executado"
+            echo "- Produção voltou para **$TAG**"
+            echo "- Solicitado por: @$GITHUB_ACTOR"
+            echo "- Lembrete: abra uma Issue explicando o motivo e corrija a main."
+          } >> "$GITHUB_STEP_SUMMARY"
